@@ -27,8 +27,10 @@ const AuthPage = () => {
           <div className="logo-container">
             <ShoppingBag className="logo-icon" size={28} />
           </div>
-          <h1 className="brand-title">StyleHub</h1>
-          <p className="brand-subtitle">Fashion Management System</p>
+          <h1 className="brand-title">Nhóm 3</h1>
+          <p className="brand-subtitle">
+            Hệ thống Quản lý bán hàng cho cửa hàng quần áo
+          </p>
         </div>
         <AuthForm isLogin={isLogin} setIsLogin={setIsLogin} />
         <p className="terms-text">
