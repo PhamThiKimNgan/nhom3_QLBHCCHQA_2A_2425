@@ -33,16 +33,6 @@ const AuthPage = () => {
           </p>
         </div>
         <AuthForm isLogin={isLogin} setIsLogin={setIsLogin} />
-        <p className="terms-text">
-          By continuing, you agree to our{" "}
-          <a href="/terms" className="terms-link">
-            Terms of Service
-          </a>{" "}
-          and{" "}
-          <a href="/terms" className="terms-link">
-            Privacy Policy
-          </a>
-        </p>
       </div>
     </div>
   );
