@@ -26,6 +26,31 @@ const AuthForm = ({ isLogin, setIsLogin }) => {
     // Xử lý submit
   };
 
+  // Xử lý API đăng kí
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("http://localhost:5000/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert("Đăng ký thành công!");
+        setIsLogin(true); // Chuyển sang form đăng nhập
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      alert("Lỗi kết nối server!");
+    }
+  };
+
   const toggleAuthMode = () => {
     setIsLogin(!isLogin);
     setFormData({
@@ -172,6 +197,7 @@ const AuthForm = ({ isLogin, setIsLogin }) => {
         type="submit"
         className="submit-btn"
         style={{ marginTop: "1.5rem" }}
+        onClick={isLogin ? null : handleRegister}
       >
         {isLogin ? "Đăng nhập" : "Đăng ký"}
       </button>
