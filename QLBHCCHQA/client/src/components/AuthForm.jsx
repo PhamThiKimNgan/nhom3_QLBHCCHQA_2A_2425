@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // PropTypes for AuthForm
 import PropTypes from "prop-types";
@@ -13,6 +14,7 @@ const AuthForm = ({ isLogin, setIsLogin }) => {
     password: "",
     confirmPassword: "",
   });
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     setFormData({
@@ -21,16 +23,35 @@ const AuthForm = ({ isLogin, setIsLogin }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Xử lý submit
+    if (!isLogin) return; // Đăng ký đã xử lý riêng
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert("Đăng nhập thành công!");
+        navigate("/home");
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      alert("Lỗi kết nối server!");
+    }
   };
 
   // Xử lý API đăng kí
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:5000/api/register", {
+      const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
