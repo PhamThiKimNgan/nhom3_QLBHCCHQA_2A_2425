@@ -41,7 +41,7 @@ const Home = () => {
         {/* Header */}
         <div className="home-p-6 home-border-b">
           <h2 className="home-text-2xl home-font-bold home-text-sky-800 home-text-center">
-            Navigation
+            Quản lý Cửa Hàng Quần Áo
           </h2>
         </div>
         {/* Menu Items */}
@@ -74,7 +74,7 @@ const Home = () => {
         {/* Footer */}
         <div className="home-p-4 home-border-t">
           <div className="home-text-center home-text-sky-700 home-text-sm home-opacity-75">
-            © 2024 Dashboard
+            Make by Nhom3
           </div>
         </div>
       </div>
