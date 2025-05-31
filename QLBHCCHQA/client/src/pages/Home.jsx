@@ -13,12 +13,12 @@ const Home = () => {
   const [activePage, setActivePage] = useState("User");
 
   const menuItems = [
-    { name: "User", icon: User },
-    { name: "Product", icon: Package },
-    { name: "Order", icon: ShoppingCart },
-    { name: "Invoice", icon: FileText },
-    { name: "Notification", icon: Bell },
-    { name: "Warehouse", icon: Warehouse },
+    { name: "Tài khoản", icon: User },
+    { name: "Sản phẩm", icon: Package },
+    { name: "Đặt hàng", icon: ShoppingCart },
+    { name: "Hóa đơn", icon: FileText },
+    { name: "Thông báo", icon: Bell },
+    { name: "Kho hàng", icon: Warehouse },
   ];
 
   const renderContent = () => (
@@ -83,9 +83,6 @@ const Home = () => {
         {/* Top Bar */}
         <div className="home-bg-white home-shadow-sm home-border-b home-p-4">
           <div className="home-flex home-items-center home-justify-between">
-            <h1 className="home-text-2xl home-font-semibold home-text-gray-800">
-              {activePage} Management
-            </h1>
             <div className="home-flex home-items-center home-space-x-2">
               <div className="home-w-3 home-h-3 home-bg-green-400 home-rounded-full home-animate-pulse"></div>
               <span className="home-text-sm home-text-gray-600">Online</span>
