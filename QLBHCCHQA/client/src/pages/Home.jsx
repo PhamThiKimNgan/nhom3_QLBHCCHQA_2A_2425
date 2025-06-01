@@ -8,9 +8,15 @@ import {
   Warehouse,
 } from "lucide-react";
 import "./Home.css";
+import Account from "./Account";
+import Product from "./Product";
+import Order from "./Order";
+import Invoice from "./Invoice";
+import Notification from "./Notification";
+import WarehousePage from "./Warehouse";
 
 const Home = () => {
-  const [activePage, setActivePage] = useState("User");
+  const [activePage, setActivePage] = useState("Tài khoản");
 
   const menuItems = [
     { name: "Tài khoản", icon: User },
@@ -21,18 +27,25 @@ const Home = () => {
     { name: "Kho hàng", icon: Warehouse },
   ];
 
-  const renderContent = () => (
-    <div className="home-flex-1 home-flex home-items-center home-justify-center home-bg-gradient">
-      <div className="home-text-center home-transform">
-        <div className="home-bg-white home-rounded-2xl home-shadow-2xl home-p-12 home-transform">
-          <h1 className="home-text-6xl home-font-bold home-text-gray-800 home-mb-4 home-animate-pulse">
-            {activePage}
-          </h1>
-          <div className="home-w-24 home-h-1 home-bg-gradient-bar home-mx-auto home-rounded-full"></div>
-        </div>
-      </div>
-    </div>
-  );
+  // Hàm renderContent mới
+  const renderContent = () => {
+    switch (activePage) {
+      case "Tài khoản":
+        return <Account />;
+      case "Sản phẩm":
+        return <Product />;
+      case "Đặt hàng":
+        return <Order />;
+      case "Hóa đơn":
+        return <Invoice />;
+      case "Thông báo":
+        return <Notification />;
+      case "Kho hàng":
+        return <WarehousePage />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="home-flex home-h-screen home-bg-gray-100">
