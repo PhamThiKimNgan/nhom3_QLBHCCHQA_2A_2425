@@ -6,6 +6,7 @@ import {
   FileText,
   Bell,
   Warehouse,
+  Users, 
 } from "lucide-react";
 import "./Home.css";
 import Account from "./Account";
@@ -14,6 +15,7 @@ import Order from "./Order";
 import Invoice from "./Invoice";
 import Notification from "./Notification";
 import WarehousePage from "./Warehouse";
+import Customer from "./Customer";
 
 const Home = () => {
   const [activePage, setActivePage] = useState("Tài khoản");
@@ -25,9 +27,10 @@ const Home = () => {
     { name: "Hóa đơn", icon: FileText },
     { name: "Thông báo", icon: Bell },
     { name: "Kho hàng", icon: Warehouse },
+    { name: "Customer", icon: Users }, 
   ];
 
-  // Hàm renderContent mới
+
   const renderContent = () => {
     switch (activePage) {
       case "Tài khoản":
@@ -42,6 +45,8 @@ const Home = () => {
         return <Notification />;
       case "Kho hàng":
         return <WarehousePage />;
+      case "Customer":
+        return <Customer />; 
       default:
         return null;
     }
