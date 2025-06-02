@@ -43,13 +43,22 @@ const Product = () => {
   });
 
   const categories = [
-    "Electronics",
-    "Clothing",
-    "Home & Garden",
-    "Sports",
-    "Books",
-    "Beauty",
-    "Toys",
+    "T-Shirts",
+    "Shirts",
+    "Jeans",
+    "Pants",
+    "Shorts",
+    "Dresses",
+    "Skirts",
+    "Jackets",
+    "Coats",
+    "Sweaters",
+    "Hoodies",
+    "Suits",
+    "Underwear",
+    "Socks",
+    "Shoes",
+    "Accessories",
   ];
   const sizes = ["XS", "S", "M", "L", "XL", "XXL", "One Size"];
   const colors = [
@@ -64,48 +73,19 @@ const Product = () => {
     "Pink",
     "Brown",
   ];
+  const fetchProducts = async () => {
+    try {
+      const res = await fetch("/api/products");
+      const data = await res.json();
+      setProducts(data);
+      setFilteredProducts(data);
+    } catch (err) {
+      showNotification("Không thể tải sản phẩm từ server!", "error");
+    }
+  };
 
   useEffect(() => {
-    const sampleProducts = [
-      {
-        id: 1,
-        code: "ELC001",
-        name: "Smartphone",
-        size: "One Size",
-        color: "Black",
-        price: 699,
-        quantity: 25,
-        category: "Electronics",
-        imageUrl:
-          "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&h=150&fit=crop&crop=center",
-      },
-      {
-        id: 2,
-        code: "CLT001",
-        name: "T-Shirt",
-        size: "M",
-        color: "Blue",
-        price: 29.99,
-        quantity: 100,
-        category: "Clothing",
-        imageUrl:
-          "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=150&h=150&fit=crop&crop=center",
-      },
-      {
-        id: 3,
-        code: "HG001",
-        name: "Garden Hose",
-        size: "L",
-        color: "Green",
-        price: 45.5,
-        quantity: 15,
-        category: "Home & Garden",
-        imageUrl:
-          "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=150&h=150&fit=crop&crop=center",
-      },
-    ];
-    setProducts(sampleProducts);
-    setFilteredProducts(sampleProducts);
+    fetchProducts();
   }, []);
 
   const showNotification = (message, type) => {
@@ -175,48 +155,54 @@ const Product = () => {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!isCodeUnique(productForm.code, editingProduct?.id)) {
       showNotification("Product code must be unique!", "error");
       return;
     }
 
-    if (editingProduct) {
-      const updatedProducts = products.map((product) =>
-        product.id === editingProduct.id
-          ? {
-              ...product,
-              ...productForm,
-              price: parseFloat(productForm.price),
-              quantity: parseInt(productForm.quantity),
-            }
-          : product
-      );
-      setProducts(updatedProducts);
-      logAction(
-        "EDIT",
-        productForm.code,
-        `Updated product: ${productForm.name}`
-      );
-      showNotification("Product updated successfully!", "success");
-    } else {
-      const newProduct = {
-        id: Date.now(),
-        ...productForm,
-        price: parseFloat(productForm.price),
-        quantity: parseInt(productForm.quantity),
-      };
-      setProducts((prev) => [...prev, newProduct]);
-      logAction(
-        "ADD",
-        productForm.code,
-        `Added new product: ${productForm.name}`
-      );
-      showNotification("Product added successfully!", "success");
+    try {
+      if (editingProduct) {
+        // Update product
+        await fetch(`/api/products/${editingProduct.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...productForm,
+            price: parseFloat(productForm.price),
+            quantity: parseInt(productForm.quantity),
+          }),
+        });
+        logAction(
+          "EDIT",
+          productForm.code,
+          `Updated product: ${productForm.name}`
+        );
+        showNotification("Product updated successfully!", "success");
+      } else {
+        // Add product
+        await fetch("/api/products", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...productForm,
+            price: parseFloat(productForm.price),
+            quantity: parseInt(productForm.quantity),
+          }),
+        });
+        logAction(
+          "ADD",
+          productForm.code,
+          `Added new product: ${productForm.name}`
+        );
+        showNotification("Product added successfully!", "success");
+      }
+      fetchProducts();
+      resetForm();
+      setShowModal(false);
+    } catch (err) {
+      showNotification("Lỗi khi lưu sản phẩm!", "error");
     }
-
-    resetForm();
-    setShowModal(false);
   };
 
   const handleEdit = (product) => {
@@ -235,11 +221,16 @@ const Product = () => {
     setShowModal(true);
   };
 
-  const handleDelete = (product) => {
+  const handleDelete = async (product) => {
     if (window.confirm(`Are you sure you want to delete "${product.name}"?`)) {
-      setProducts((prev) => prev.filter((p) => p.id !== product.id));
-      logAction("DELETE", product.code, `Deleted product: ${product.name}`);
-      showNotification("Product deleted successfully!", "success");
+      try {
+        await fetch(`/api/products/${product.id}`, { method: "DELETE" });
+        logAction("DELETE", product.code, `Deleted product: ${product.name}`);
+        showNotification("Product deleted successfully!", "success");
+        fetchProducts();
+      } catch (err) {
+        showNotification("Lỗi khi xóa sản phẩm!", "error");
+      }
     }
   };
 
@@ -295,7 +286,7 @@ const Product = () => {
         <div className="product-bg-white product-rounded-lg product-shadow-md product-p-6 product-mb-6">
           <div className="product-flex product-justify-between product-items-center">
             <h1 className="product-text-3xl product-font-bold product-text-gray-800">
-              Product Management System
+              Hệ thống Quản lý Sản phẩm
             </h1>
             <button
               onClick={() => setShowModal(true)}
@@ -491,7 +482,7 @@ const Product = () => {
                       </span>
                     </td>
                     <td className="product-px-6 product-py-4 product-whitespace-nowrap product-text-sm product-text-gray-900">
-                      ${product.price.toFixed(2)}
+                      ${Number(product.price).toFixed(2)}
                     </td>
                     <td className="product-px-6 product-py-4 product-whitespace-nowrap product-text-sm product-text-gray-900">
                       {product.quantity}
