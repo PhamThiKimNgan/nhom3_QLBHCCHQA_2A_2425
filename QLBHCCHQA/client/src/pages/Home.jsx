@@ -6,7 +6,7 @@ import {
   FileText,
   Bell,
   Warehouse,
-  Users, 
+  Users,
 } from "lucide-react";
 import "./Home.css";
 import Account from "./Account";
@@ -27,9 +27,8 @@ const Home = () => {
     { name: "Hóa đơn", icon: FileText },
     { name: "Thông báo", icon: Bell },
     { name: "Kho hàng", icon: Warehouse },
-    { name: "Customer", icon: Users }, 
+    { name: "Customer", icon: Users },
   ];
-
 
   const renderContent = () => {
     switch (activePage) {
@@ -46,7 +45,7 @@ const Home = () => {
       case "Kho hàng":
         return <WarehousePage />;
       case "Customer":
-        return <Customer />; 
+        return <Customer />;
       default:
         return null;
     }
@@ -55,7 +54,7 @@ const Home = () => {
   return (
     <div className="home-flex home-h-screen home-bg-gray-100">
       {/* Sidebar */}
-      <div className="home-w-64 home-bg-gradient-sidebar home-shadow-2xl home-flex home-flex-col">
+      <div className="home-w-64 home-bg-gradient-sidebar home-shadow-2xl home-flex home-flex-col home-flex-shrink-0">
         {/* Header */}
         <div className="home-p-6 home-border-b">
           <h2 className="home-text-2xl home-font-bold home-text-sky-800 home-text-center">
@@ -97,7 +96,7 @@ const Home = () => {
         </div>
       </div>
       {/* Main Content */}
-      <div className="home-flex-1 home-flex home-flex-col">
+      <div className="home-flex-1 home-h-screen home-overflow-y-auto">
         {/* Top Bar */}
         <div className="home-bg-white home-shadow-sm home-border-b home-p-4">
           <div className="home-flex home-items-center home-justify-between">

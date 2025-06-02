@@ -223,6 +223,9 @@
 .home-flex.home-items-center button:active {
   transform: scale(0.98);
 }
+.home-overflow-y-auto {
+  overflow-y: auto;
+}
 
 /* Animations */
 .home-animate-pulse {
