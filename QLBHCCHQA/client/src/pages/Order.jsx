@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Phone,
   Package,
@@ -27,35 +27,45 @@ const Order = () => {
   });
   const [editingOrder, setEditingOrder] = useState(null);
   const [notifications, setNotifications] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
   const invoiceRef = useRef();
 
-  const products = [
-    { name: "Áo thun cotton", basePrice: 150000 },
-    { name: "Quần jeans", basePrice: 300000 },
-    { name: "Áo khoác hoodie", basePrice: 450000 },
-    { name: "Giày sneaker", basePrice: 800000 },
-    { name: "Túi xách da", basePrice: 600000 },
-  ];
-
-  const sizes = ["S", "M", "L", "XL", "XXL"];
   const shippingOptions = [
     { name: "Viettel Post", fee: 30000 },
     { name: "GHTK", fee: 25000 },
     { name: "Grab", fee: 45000 },
   ];
   const orderStatuses = [
-    "Pending",
-    "Confirmed",
-    "Processing",
-    "Shipped",
-    "Delivered",
-    "Cancelled",
+    "Đang chờ xử lý",
+    "Đã xác nhận",
+    "Đang xử lý",
+    "SĐã gửi hàng",
+    "Đã nhận hàng",
+    "Đã hủy",
   ];
+
+  useEffect(() => {
+    // Thay URL này bằng API thực tế của bạn
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        setProducts(data);
+        setLoadingProducts(false);
+      })
+      .catch(() => {
+        setProducts([]);
+        setLoadingProducts(false);
+      });
+  }, []);
 
   const calculateTotal = (productName, shippingUnit) => {
     const product = products.find((p) => p.name === productName);
     const shipping = shippingOptions.find((s) => s.name === shippingUnit);
-    return (product?.basePrice || 0) + (shipping?.fee || 0);
+
+    const productPrice = product ? Number(product.price) : 0;
+    const shippingFee = shipping ? Number(shipping.fee) : 0;
+    return productPrice + shippingFee;
   };
 
   const sendNotification = (phoneNumber, message) => {
@@ -198,7 +208,10 @@ const Order = () => {
             <tr style="background-color: #f9f9f9; font-weight: bold;">
               <td style="border: 1px solid #ddd; padding: 12px;" colspan="2">Tổng cộng</td>
               <td style="border: 1px solid #ddd; padding: 12px; text-align: right; color: #e11d48;">
-                ${order.totalPrice.toLocaleString("vi-VN")}đ
+                ${order.totalPrice.toLocaleString("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                })}
               </td>
             </tr>
           </tfoot>
@@ -334,13 +347,24 @@ const Order = () => {
                   }))
                 }
               >
-                <option value="">Chọn sản phẩm</option>
-                {products.map((product) => (
-                  <option key={product.name} value={product.name}>
-                    {product.name} - {product.basePrice.toLocaleString("vi-VN")}
-                    đ
-                  </option>
-                ))}
+                {loadingProducts ? (
+                  <option value="">Đang tải...</option>
+                ) : products.length === 0 ? (
+                  <option value="">Trống</option>
+                ) : (
+                  <>
+                    <option value="">Chọn sản phẩm</option>
+                    {products.map((product) => (
+                      <option key={product.id} value={product.name}>
+                        {product.name} -{" "}
+                        {Number(product.price).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </option>
+                    ))}
+                  </>
+                )}
               </select>
             </div>
             <div className="form-group">
@@ -355,7 +379,7 @@ const Order = () => {
                 }
               >
                 <option value="">Chọn size</option>
-                {sizes.map((size) => (
+                {["S", "M", "L", "XL", "XXL"].map((size) => (
                   <option key={size} value={size}>
                     {size}
                   </option>
@@ -379,7 +403,12 @@ const Order = () => {
                 <option value="">Chọn đơn vị vận chuyển</option>
                 {shippingOptions.map((option) => (
                   <option key={option.name} value={option.name}>
-                    {option.name} (+{option.fee.toLocaleString("vi-VN")}đ)
+                    {option.name} (+
+                    {option.fee.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                    )
                   </option>
                 ))}
               </select>
@@ -400,8 +429,10 @@ const Order = () => {
                       {calculateTotal(
                         currentOrder.productName,
                         currentOrder.shippingUnit
-                      ).toLocaleString("vi-VN")}
-                      đ
+                      ).toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
                     </span>
                   </div>
                 </div>
@@ -522,7 +553,12 @@ const Order = () => {
                         {order.productName} {order.size && `(${order.size})`}
                       </td>
                       <td>{order.shippingUnit}</td>
-                      <td>{order.totalPrice.toLocaleString("vi-VN")}đ</td>
+                      <td>
+                        {order.totalPrice.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </td>
                       <td>
                         <span
                           className={`status-badge status-${order.status.toLowerCase()}`}

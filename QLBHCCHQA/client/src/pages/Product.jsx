@@ -60,7 +60,7 @@ const Product = () => {
     "Shoes",
     "Accessories",
   ];
-  const sizes = ["XS", "S", "M", "L", "XL", "XXL", "One Size"];
+  const sizes = ["XS", "S", "M", "L", "XL", "XXL", "All Size"];
   const colors = [
     "Red",
     "Blue",
@@ -293,7 +293,7 @@ const Product = () => {
               className="product-bg-blue-600 hover:product-bg-blue-700 product-text-white product-px-4 product-py-2 product-rounded-lg product-flex product-items-center product-gap-2 product-transition-colors"
             >
               <Plus size={20} />
-              Add Product
+              Thêm
             </button>
           </div>
         </div>
@@ -321,7 +321,7 @@ const Product = () => {
           <div className="product-flex product-items-center product-gap-2 product-mb-4">
             <Filter size={20} className="product-text-gray-600" />
             <h2 className="product-text-xl product-font-semibold product-text-gray-800">
-              Filters
+              Bộ lọc tìm kiếm sản phẩm
             </h2>
           </div>
           <div className="product-grid product-grid-cols-1 md:product-grid-cols-3 lg:product-grid-cols-6 product-gap-4">
@@ -332,7 +332,7 @@ const Product = () => {
               }
               className="product-border product-border-gray-300 product-rounded-lg product-px-3 product-py-2 focus:product-ring-2 focus:product-ring-blue-500 focus:product-border-transparent"
             >
-              <option value="">All Sizes</option>
+              <option value="">Đủ Size</option>
               {sizes.map((size) => (
                 <option key={size} value={size}>
                   {size}
@@ -347,7 +347,7 @@ const Product = () => {
               }
               className="product-border product-border-gray-300 product-rounded-lg product-px-3 product-py-2 focus:product-ring-2 focus:product-ring-blue-500 focus:product-border-transparent"
             >
-              <option value="">All Colors</option>
+              <option value="">Màu sắc</option>
               {colors.map((color) => (
                 <option key={color} value={color}>
                   {color}
@@ -362,7 +362,7 @@ const Product = () => {
               }
               className="product-border product-border-gray-300 product-rounded-lg product-px-3 product-py-2 focus:product-ring-2 focus:product-ring-blue-500 focus:product-border-transparent"
             >
-              <option value="">All Categories</option>
+              <option value="">Loại hàng</option>
               {categories.map((category) => (
                 <option key={category} value={category}>
                   {category}
@@ -372,7 +372,7 @@ const Product = () => {
 
             <input
               type="number"
-              placeholder="Min Price"
+              placeholder="Giá thấp nhất"
               value={filters.priceMin}
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, priceMin: e.target.value }))
@@ -382,7 +382,7 @@ const Product = () => {
 
             <input
               type="number"
-              placeholder="Max Price"
+              placeholder="Giá cao nhất"
               value={filters.priceMax}
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, priceMax: e.target.value }))
@@ -394,7 +394,7 @@ const Product = () => {
               onClick={clearFilters}
               className="product-bg-gray-500 hover:product-bg-gray-600 product-text-white product-px-4 product-py-2 product-rounded-lg product-transition-colors"
             >
-              Clear Filters
+              Xóa bộ lọc tìm kiếm
             </button>
           </div>
         </div>
@@ -482,7 +482,10 @@ const Product = () => {
                       </span>
                     </td>
                     <td className="product-px-6 product-py-4 product-whitespace-nowrap product-text-sm product-text-gray-900">
-                      ${Number(product.price).toFixed(2)}
+                      {product.price.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
                     </td>
                     <td className="product-px-6 product-py-4 product-whitespace-nowrap product-text-sm product-text-gray-900">
                       {product.quantity}
@@ -519,7 +522,7 @@ const Product = () => {
         {/* Action Logs */}
         <div className="product-bg-white product-rounded-lg product-shadow-md product-p-6">
           <h2 className="product-text-xl product-font-semibold product-text-gray-800 product-mb-4">
-            Action Logs
+            Thông báo sửa đổi
           </h2>
           <div className="product-max-h-64 product-overflow-y-auto">
             {actionLogs.length === 0 ? (
@@ -568,13 +571,13 @@ const Product = () => {
             <div className="product-bg-white product-rounded-lg product-shadow-xl product-w-full product-max-w-md">
               <div className="product-px-6 product-py-4 product-border-b product-border-gray-200">
                 <h3 className="product-text-lg product-font-semibold product-text-gray-800">
-                  {editingProduct ? "Edit Product" : "Add New Product"}
+                  {editingProduct ? "Edit Product" : "Thêm sản phẩm mới"}
                 </h3>
               </div>
-              <div className="product-p-6 product-space-y-4">
-                <div>
+              <div className="product-p-6 product-modal-form-grid">
+                <div className="product-form-full">
                   <label className="product-block product-text-sm product-font-medium product-text-gray-700 product-mb-2">
-                    Product Image
+                    Hình ảnh mô tả sản phẩm
                   </label>
                   <div className="product-space-y-4">
                     {!productForm.imageUrl ? (
@@ -592,7 +595,7 @@ const Product = () => {
                         >
                           <Upload className="product-w-12 product-h-12 product-text-gray-400 product-mb-2" />
                           <span className="product-text-sm product-text-gray-600 product-mb-1">
-                            Click to upload an image
+                            Click để tải ảnh lên
                           </span>
                           <span className="product-text-xs product-text-gray-400">
                             PNG, JPG, GIF up to 10MB
@@ -615,7 +618,6 @@ const Product = () => {
                         </button>
                       </div>
                     )}
-
                     <div className="product-text-center product-text-sm product-text-gray-500">
                       or
                     </div>
@@ -633,16 +635,15 @@ const Product = () => {
                           }))
                         }
                         className="product-w-full product-border product-border-gray-300 product-rounded-lg product-px-3 product-py-2 focus:product-ring-2 focus:product-ring-blue-500 focus:product-border-transparent"
-                        placeholder="Or paste image URL here"
+                        placeholder="Hoặc dán URL của hình ảnh sản phẩm"
                         disabled={!!productForm.imageFile}
                       />
                     </div>
                   </div>
                 </div>
-
                 <div>
                   <label className="product-block product-text-sm product-font-medium product-text-gray-700 product-mb-1">
-                    Product Code
+                    Mã Sản phẩm
                   </label>
                   <input
                     type="text"
@@ -660,7 +661,7 @@ const Product = () => {
 
                 <div>
                   <label className="product-block product-text-sm product-font-medium product-text-gray-700 product-mb-1">
-                    Product Name
+                    Tên sản phẩm
                   </label>
                   <input
                     type="text"
@@ -675,99 +676,94 @@ const Product = () => {
                     required
                   />
                 </div>
-
-                <div className="product-grid product-grid-cols-2 product-gap-4">
-                  <div>
-                    <label className="product-block product-text-sm product-font-medium product-text-gray-700 product-mb-1">
-                      Size
-                    </label>
-                    <select
-                      value={productForm.size}
-                      onChange={(e) =>
-                        setProductForm((prev) => ({
-                          ...prev,
-                          size: e.target.value,
-                        }))
-                      }
-                      className="product-w-full product-border product-border-gray-300 product-rounded-lg product-px-3 product-py-2 focus:product-ring-2 focus:product-ring-blue-500 focus:product-border-transparent"
-                      required
-                    >
-                      <option value="">Select Size</option>
-                      {sizes.map((size) => (
-                        <option key={size} value={size}>
-                          {size}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="product-block product-text-sm product-font-medium product-text-gray-700 product-mb-1">
-                      Color
-                    </label>
-                    <select
-                      value={productForm.color}
-                      onChange={(e) =>
-                        setProductForm((prev) => ({
-                          ...prev,
-                          color: e.target.value,
-                        }))
-                      }
-                      className="product-w-full product-border product-border-gray-300 product-rounded-lg product-px-3 product-py-2 focus:product-ring-2 focus:product-ring-blue-500 focus:product-border-transparent"
-                      required
-                    >
-                      <option value="">Select Color</option>
-                      {colors.map((color) => (
-                        <option key={color} value={color}>
-                          {color}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="product-grid product-grid-cols-2 product-gap-4">
-                  <div>
-                    <label className="product-block product-text-sm product-font-medium product-text-gray-700 product-mb-1">
-                      Price
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={productForm.price}
-                      onChange={(e) =>
-                        setProductForm((prev) => ({
-                          ...prev,
-                          price: e.target.value,
-                        }))
-                      }
-                      className="product-w-full product-border product-border-gray-300 product-rounded-lg product-px-3 product-py-2 focus:product-ring-2 focus:product-ring-blue-500 focus:product-border-transparent"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="product-block product-text-sm product-font-medium product-text-gray-700 product-mb-1">
-                      Quantity
-                    </label>
-                    <input
-                      type="number"
-                      value={productForm.quantity}
-                      onChange={(e) =>
-                        setProductForm((prev) => ({
-                          ...prev,
-                          quantity: e.target.value,
-                        }))
-                      }
-                      className="product-w-full product-border product-border-gray-300 product-rounded-lg product-px-3 product-py-2 focus:product-ring-2 focus:product-ring-blue-500 focus:product-border-transparent"
-                      required
-                    />
-                  </div>
+                <div>
+                  <label className="product-block product-text-sm product-font-medium product-text-gray-700 product-mb-1">
+                    Size
+                  </label>
+                  <select
+                    value={productForm.size}
+                    onChange={(e) =>
+                      setProductForm((prev) => ({
+                        ...prev,
+                        size: e.target.value,
+                      }))
+                    }
+                    className="product-w-full product-border product-border-gray-300 product-rounded-lg product-px-3 product-py-2 focus:product-ring-2 focus:product-ring-blue-500 focus:product-border-transparent"
+                    required
+                  >
+                    <option value="">Chọn Size</option>
+                    {sizes.map((size) => (
+                      <option key={size} value={size}>
+                        {size}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
                   <label className="product-block product-text-sm product-font-medium product-text-gray-700 product-mb-1">
-                    Category
+                    Màu sắc
+                  </label>
+                  <select
+                    value={productForm.color}
+                    onChange={(e) =>
+                      setProductForm((prev) => ({
+                        ...prev,
+                        color: e.target.value,
+                      }))
+                    }
+                    className="product-w-full product-border product-border-gray-300 product-rounded-lg product-px-3 product-py-2 focus:product-ring-2 focus:product-ring-blue-500 focus:product-border-transparent"
+                    required
+                  >
+                    <option value="">Chọn màu Color</option>
+                    {colors.map((color) => (
+                      <option key={color} value={color}>
+                        {color}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="product-block product-text-sm product-font-medium product-text-gray-700 product-mb-1">
+                    Giá cả
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={productForm.price}
+                    onChange={(e) =>
+                      setProductForm((prev) => ({
+                        ...prev,
+                        price: e.target.value,
+                      }))
+                    }
+                    className="product-w-full product-border product-border-gray-300 product-rounded-lg product-px-3 product-py-2 focus:product-ring-2 focus:product-ring-blue-500 focus:product-border-transparent"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="product-block product-text-sm product-font-medium product-text-gray-700 product-mb-1">
+                    Số lượng
+                  </label>
+                  <input
+                    type="number"
+                    value={productForm.quantity}
+                    onChange={(e) =>
+                      setProductForm((prev) => ({
+                        ...prev,
+                        quantity: e.target.value,
+                      }))
+                    }
+                    className="product-w-full product-border product-border-gray-300 product-rounded-lg product-px-3 product-py-2 focus:product-ring-2 focus:product-ring-blue-500 focus:product-border-transparent"
+                    required
+                  />
+                </div>
+
+                <div className="product-form-full">
+                  <label className="product-block product-text-sm product-font-medium product-text-gray-700 product-mb-1">
+                    Loại thời trang
                   </label>
                   <select
                     value={productForm.category}
@@ -788,13 +784,12 @@ const Product = () => {
                     ))}
                   </select>
                 </div>
-
-                <div className="product-flex product-justify-end product-space-x-3 product-pt-4">
+                <div className="product-modal-form-footer">
                   <button
                     type="button"
                     onClick={() => {
-                      setShowModal(false);
                       resetForm();
+                      setShowModal(false);
                     }}
                     className="product-px-4 product-py-2 product-text-gray-700 product-bg-gray-200 hover:product-bg-gray-300 product-rounded-lg product-transition-colors"
                   >
