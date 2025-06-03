@@ -1,20 +1,9 @@
 import React, { useState } from "react";
-import {
-  User,
-  Package,
-  ShoppingCart,
-  FileText,
-  Bell,
-  Warehouse,
-  Users,
-} from "lucide-react";
+import { User, Package, ShoppingCart, Users } from "lucide-react";
 import "./Home.css";
 import Account from "./Account";
 import Product from "./Product";
 import Order from "./Order";
-import Invoice from "./Invoice";
-import Notification from "./Notification";
-import WarehousePage from "./Warehouse";
 import Customer from "./Customer";
 
 const Home = () => {
@@ -24,9 +13,6 @@ const Home = () => {
     { name: "Tài khoản", icon: User },
     { name: "Sản phẩm", icon: Package },
     { name: "Đặt hàng", icon: ShoppingCart },
-    { name: "Hóa đơn", icon: FileText },
-    { name: "Thông báo", icon: Bell },
-    { name: "Kho hàng", icon: Warehouse },
     { name: "Customer", icon: Users },
   ];
 
@@ -38,12 +24,6 @@ const Home = () => {
         return <Product />;
       case "Đặt hàng":
         return <Order />;
-      case "Hóa đơn":
-        return <Invoice />;
-      case "Thông báo":
-        return <Notification />;
-      case "Kho hàng":
-        return <WarehousePage />;
       case "Customer":
         return <Customer />;
       default:

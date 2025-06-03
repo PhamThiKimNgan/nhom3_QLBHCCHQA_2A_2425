@@ -1,35 +1,33 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import "./Order.css";
 import {
   Phone,
   Package,
   User,
   MapPin,
-  FileText,
-  Bell,
   Edit3,
-  Save,
-  X,
   Truck,
+  X,
+  Save,
 } from "lucide-react";
-import "./Order.css";
 
 const Order = () => {
   const [orders, setOrders] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [notifications, setNotifications] = useState([]);
   const [currentOrder, setCurrentOrder] = useState({
     customerName: "",
     phoneNumber: "",
     address: "",
     productName: "",
     size: "",
+    quantity: 1, // Thêm số lượng mặc định là 1
     shippingUnit: "",
     notes: "",
     status: "Pending",
   });
   const [editingOrder, setEditingOrder] = useState(null);
-  const [notifications, setNotifications] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [loadingProducts, setLoadingProducts] = useState(true);
-  const invoiceRef = useRef();
 
   const shippingOptions = [
     { name: "Viettel Post", fee: 30000 },
@@ -59,11 +57,28 @@ const Order = () => {
       });
   }, []);
 
+  // Fetch orders from database
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch("/api/orders");
+        const data = await response.json();
+        setOrders(data);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
   const calculateTotal = (productName, shippingUnit) => {
     const product = products.find((p) => p.name === productName);
     const shipping = shippingOptions.find((s) => s.name === shippingUnit);
 
-    const productPrice = product ? Number(product.price) : 0;
+    const productPrice = product
+      ? Number(product.price) * currentOrder.quantity
+      : 0;
     const shippingFee = shipping ? Number(shipping.fee) : 0;
     return productPrice + shippingFee;
   };
@@ -82,64 +97,41 @@ const Order = () => {
     }, 500);
   };
 
-  const handleCreateOrder = () => {
-    if (
-      !currentOrder.customerName ||
-      !currentOrder.phoneNumber ||
-      !currentOrder.productName
-    ) {
-      alert("Vui lòng điền đầy đủ thông tin bắt buộc!");
+  const handleCreateOrder = async () => {
+    const response = await fetch("http://localhost:5000/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(currentOrder),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      alert(error.message || "Có lỗi xảy ra!");
       return;
     }
 
-    const newOrder = {
-      ...currentOrder,
-      id: Date.now(),
-      orderDate: new Date().toLocaleDateString("vi-VN"),
-      totalPrice: calculateTotal(
-        currentOrder.productName,
-        currentOrder.shippingUnit
-      ),
-      createdAt: new Date(),
-    };
+    // Xử lý tiếp khi thành công...
+  };
 
-    setOrders((prev) => [...prev, newOrder]);
-
-    sendNotification(
-      currentOrder.phoneNumber,
-      `Đơn hàng #${
-        newOrder.id
-      } đã được tạo thành công. Tổng tiền: ${newOrder.totalPrice.toLocaleString(
-        "vi-VN"
-      )}đ. Cảm ơn bạn!`
-    );
-
-    setCurrentOrder({
-      customerName: "",
-      phoneNumber: "",
-      address: "",
-      productName: "",
-      size: "",
-      shippingUnit: "",
-      notes: "",
-      status: "Pending",
-    });
-
-    alert("Đơn hàng đã được tạo thành công!");
+  // Thêm function fetchOrders
+  const fetchOrders = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/orders");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setOrders(data);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    }
   };
 
   const updateOrderStatus = (orderId, newStatus, newNotes = "") => {
     setOrders((prev) =>
       prev.map((order) => {
         if (order.id === orderId) {
-          const updatedOrder = { ...order, status: newStatus, notes: newNotes };
-          sendNotification(
-            order.phoneNumber,
-            `Đơn hàng #${orderId} đã được cập nhật: ${newStatus}. ${
-              newNotes ? "Ghi chú: " + newNotes : ""
-            }`
-          );
-          return updatedOrder;
+          return { ...order, status: newStatus, notes: newNotes };
         }
         return order;
       })
@@ -414,6 +406,25 @@ const Order = () => {
               </select>
             </div>
           </div>
+          {/* Thêm trường số lượng */}
+          <div className="form-row">
+            <div className="form-group">
+              <label>Số lượng</label>
+              <input
+                type="number"
+                min="1"
+                value={currentOrder.quantity}
+                onChange={(e) =>
+                  setCurrentOrder((prev) => ({
+                    ...prev,
+                    quantity: Math.max(1, parseInt(e.target.value) || 1),
+                  }))
+                }
+                placeholder="Nhập số lượng"
+                style={{ width: "100px" }}
+              />
+            </div>
+          </div>
           {currentOrder.productName && currentOrder.shippingUnit && (
             <div className="form-row">
               <div className="form-group" style={{ flex: 1 }}>
@@ -462,68 +473,9 @@ const Order = () => {
           </div>
         </div>
 
-        <div className="card notification-panel">
-          <h2
-            className="form-title"
-            style={{ display: "flex", alignItems: "center" }}
-          >
-            <Bell style={{ marginRight: 8, color: "#16a34a" }} />
-            Thông báo đã gửi
-          </h2>
-          <div style={{ maxHeight: 300, overflowY: "auto" }}>
-            {notifications.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">
-                Chưa có thông báo nào
-              </p>
-            ) : (
-              notifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  className="notification-message"
-                  style={{
-                    background: "#f0fdf4",
-                    borderLeft: "4px solid #22c55e",
-                    padding: "1rem 1.5rem",
-                    borderRadius: "0.7rem",
-                    marginBottom: "1rem",
-                  }}
-                >
-                  <div
-                    className="notification-title"
-                    style={{
-                      fontWeight: 600,
-                      color: "#16a34a",
-                      marginBottom: 4,
-                    }}
-                  >
-                    SMS → {notification.phoneNumber}
-                  </div>
-                  <div
-                    className="text-xs text-green-600"
-                    style={{ marginBottom: 4 }}
-                  >
-                    {notification.timestamp}
-                  </div>
-                  <div
-                    className="notification-message"
-                    style={{ color: "#166534" }}
-                  >
-                    {notification.message}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
+        {/* Hiển thị danh sách đơn hàng */}
         <div className="card orders-table-container">
-          <h2
-            className="form-title"
-            style={{ display: "flex", alignItems: "center" }}
-          >
-            <FileText style={{ marginRight: 8, color: "#9333ea" }} />
-            Danh sách đơn hàng ({orders.length})
-          </h2>
+          <h2 className="form-title">Danh sách đơn hàng ({orders.length})</h2>
           {orders.length === 0 ? (
             <p className="text-gray-500 text-center py-8">
               Chưa có đơn hàng nào
@@ -550,7 +502,8 @@ const Order = () => {
                       <td>{order.customerName}</td>
                       <td>{order.phoneNumber}</td>
                       <td>
-                        {order.productName} {order.size && `(${order.size})`}
+                        {order.productName} {order.size && `(${order.size})`} x{" "}
+                        {order.quantity}
                       </td>
                       <td>{order.shippingUnit}</td>
                       <td>
@@ -567,28 +520,12 @@ const Order = () => {
                         </span>
                       </td>
                       <td>
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: 8,
-                            justifyContent: "center",
-                          }}
+                        <button
+                          onClick={() => setEditingOrder(order)}
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs"
                         >
-                          <button
-                            onClick={() => generateInvoice(order)}
-                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition-colors"
-                            title="Xuất hóa đơn"
-                          >
-                            <FileText style={{ width: 16, height: 16 }} />
-                          </button>
-                          <button
-                            onClick={() => setEditingOrder(order)}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition-colors"
-                            title="Cập nhật trạng thái"
-                          >
-                            <Edit3 style={{ width: 16, height: 16 }} />
-                          </button>
-                        </div>
+                          <Edit3 size={16} />
+                        </button>
                       </td>
                     </tr>
                   ))}

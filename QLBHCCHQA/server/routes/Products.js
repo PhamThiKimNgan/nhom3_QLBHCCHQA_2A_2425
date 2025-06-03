@@ -57,4 +57,27 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// API cập nhật số lượng sản phẩm
+router.put('/update-quantity/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { quantity } = req.body;
+    
+    const [result] = await pool.query(
+      'UPDATE products SET quantity = quantity - ? WHERE id = ? AND quantity >= ?',
+      [quantity, id, quantity]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(400).json({ 
+        message: 'Không đủ số lượng sản phẩm trong kho' 
+      });
+    }
+
+    res.json({ message: 'Cập nhật số lượng thành công' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = { router, setPool };
